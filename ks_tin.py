@@ -3,7 +3,7 @@
 This program calculates KS, TIN and some other metrics for each transcript or exon in BED file.
 
 Copyright (C) 2018 Wendao Liu
-Copyright (C) 2016 origianl author Liguo Wang
+Copyright (C) 2016 original author Liguo Wang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -112,10 +112,10 @@ def calculate_ks(coverage,read_length):
     '''
     length = len(coverage)
     depth = sum(coverage)            #depth = read number * read length
-    if length == 0 or depth == 0:
-        return 0,1
-    max_difference = 0.0
+    #if length == 0 or depth == 0:
+    #    return 0,1
     
+    max_difference = 0.0 
     for i in range(1,length):
         #coverage here becomes empirical CDF of coverage.
         coverage[i] += coverage[i-1]
@@ -147,8 +147,8 @@ def calculate_tin(coverage):
     '''
     length = len(coverage)
     depth = sum(coverage)
-    if length == 0 or depth == 0:
-        return 0
+    #if length == 0 or depth == 0:
+    #    return 0
         
     entropy = 0.0
     for i in coverage:
@@ -213,7 +213,7 @@ for f in bamfiles:
         
         #Omit transcripts/exons with average depth.
         if numpy.mean(coverage) < options.minimum_average_depth:
-            print >>OUT, '\t'.join([str(i) for i in (name, chrom, length, numpy.mean(coverage), '-', '-', '-', '-', '-')])
+            print >>OUT, '\t'.join([str(i) for i in (name, chrom, length, numpy.mean(coverage), rate, peak, 0, 0, 1)])
         #Process transcripts/exons above minimum average depth.
         else:
             ks,p = calculate_ks(coverage,read_length)
