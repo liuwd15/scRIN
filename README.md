@@ -25,15 +25,18 @@ Then you can run it with python.
 > python ks_tin.py
 
 Or you can make it executable and move it to your PATH.
-> chmod +x ks_tin.py
-> mv ks_tin.py \~/bin #"\~/bin" can be replaced with other path in you PATH.
+> chmod +x ks_tin.py  
+
+> mv ks_tin.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
+
 > ks_tin.py
 
 ## Usage
 The required input files include:
 
 * Sorted and indexed .bam file(s). You can use samtools to sort and index a .bam file.
-> samtools sort -o example_sorted.bam example.bam
+> samtools sort -o example_sorted.bam example.bam  
+
 > samtools index example_sorted.bam
 
 * Reference .bed file containing a list of gene models. Refseq transcripts are recommended.
@@ -52,9 +55,12 @@ You can input comma-separated .bam files like this.
 >ks_tin.py -r example_refseq.bed -i example1_sorted.bam,example2_sorted.bam,example3_sorted.bam
 
 You can also create a text file containing the path of all .bam files like this.
-> cat samples.txt
-> ~/data/examples/example1/STAR_out/example1_sorted.bam
-> ~/data/examples/example2/STAR_out/example2_sorted.bam
+> cat samples.txt  
+
+> ~/data/examples/example1/STAR_out/example1_sorted.bam  
+
+> ~/data/examples/example2/STAR_out/example2_sorted.bam  
+
 > ~/data/examples/example3/STAR_out/example3_sorted.bam
 
 Then input the text file.
