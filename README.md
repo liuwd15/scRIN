@@ -2,13 +2,19 @@
 This program measures the mRNA integrity of samples and gene models.
 
 ## Requirements
-You have to install or update some python packages before running this program.
-python >= 2.7
-matplotlib >= 2.2.0
-pysam >= 0.9
-RseQC >= 2.6.4
-numpy any version
-scipy any version
+You have to install or update some python packages before running this program.   
+
+python >= 2.7   
+
+matplotlib >= 2.2.0   
+
+pysam >= 0.9   
+
+RseQC >= 2.6.4   
+
+numpy any version   
+
+scipy any version   
 
 ## Installation
 This program is a python script and works in unix-like operating systems.
@@ -64,5 +70,6 @@ Metrics of each gene model include:
 * KS: measurment of read coverage bias. Ranging from -1 to 1. Value close to -1 suggests 5' bias of read coverage, and value close to 1 suggests 3' bias.
 * P: KS test result of above KS value, under null hypothesis: read coverage is uniform coverage.
 
-For all samples, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each sample will be created in the **current directory**.
-For all gene models, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each gene model will be created in the **current directory**.
+For all samples, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each sample will be created in the **current directory**.   
+
+For all gene models, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each gene model will be created in the **current directory**.  
