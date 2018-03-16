@@ -1,7 +1,7 @@
 ﻿# Documentation
-This program calculates KS, TIN and some other metrics for each transcript in BED file.
+This program measures the mRNA integrity of samples and gene models.
 
-## Requirements:
+## Requirements
 You have to install or update some python packages before running this program.
 python >= 2.7
 matplotlib >= 2.2.0
@@ -20,7 +20,7 @@ Then you can run it with python.
 
 Or you can make it executable and move it to your PATH.
 > chmod +x ks_tin.py
-> mv ks_tin.py ~/bin #"~/bin" can be replaced with other path in you PATH.
+> mv ks_tin.py \~/bin #"\~/bin" can be replaced with other path in you PATH.
 > ks_tin.py
 
 ## Usage
@@ -38,7 +38,7 @@ The simplest usage is:
 To reduce the effect of alternative splicing in single cells, use **-e** option to calculate TIN on exons.
 > ks_tin.py -r example_refseq.bed -i example_sorted.bam -e
 
-The gene models with low expression are filted out. The default threshold is average read coverage (read length * mapped read number / gene model length) > 1, you can change it with **-d** option.
+The gene models with low expression are filted out. The default threshold is average coverage (read length * mapped read number / gene model length) > 1, you can change it with **-d** option.
 > ks_tin.py -r example_refseq.bed -i example_sorted.bam -d 2
 
 It is also recommended that many .bam files should be processed together.
@@ -56,5 +56,13 @@ Then input the text file.
 
 ## Output
 For each sample(.bam file), a .xls file containing some mRNA integrity metrics of each gene model will be created in the **same directory as .bam file**.
+Metrics of each gene model include:
+
+* Average coverage: read length * mapped read number / gene model length
+* Coverage rate: length of read mapped region / total length
+* TIN: measurement of read coverage uniformity. Ranging from 0 to 100, and high value suggests strong uniformity.
+* KS: measurment of read coverage bias. Ranging from -1 to 1. Value close to -1 suggests 5' bias of read coverage, and value close to 1 suggests 3' bias.
+* P: KS test result of above KS value, under null hypothesis: read coverage is uniform coverage.
+
 For all samples, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each sample will be created in the **current directory**.
 For all gene models, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each gene model will be created in the **current directory**.
