@@ -268,8 +268,8 @@ def process_bamfiles(files):
         print >>SUM_SAMPLE, "\t".join( [str(i) for i in (os.path.basename(file),\
                                         np.mean(ks_array[processed_file,high_expression_transcripts]),\
                                         np.std(ks_array[processed_file,high_expression_transcripts]),\
-                                        np.median(ks_array[processed_file,high_expression_transcripts]),\
-                                        np.std(ks_array[processed_file,high_expression_transcripts]))])
+                                        np.median(tin_array[processed_file,high_expression_transcripts]),\
+                                        np.std(tin_array[processed_file,high_expression_transcripts]))])
         sample_names.append(file.split('/')[-1][:-4])
         sample_median_tins.append(np.median(tin_array[processed_file,high_expression_transcripts]))
         sample_tin_stds.append(np.std(tin_array[processed_file,high_expression_transcripts]))
