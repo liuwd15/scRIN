@@ -21,9 +21,7 @@ Then you can run it with python.
 
 Or you can make it executable and move it to your PATH.
 > chmod +x ks_tin.py  
-
 > mv ks_tin.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
-
 > ks_tin.py
 
 ## Usage
@@ -31,7 +29,6 @@ The required input files include:
 
 * Sorted and indexed .bam file(s). You can use samtools to sort and index a .bam file.
 > samtools sort -o example_sorted.bam example.bam  
-
 > samtools index example_sorted.bam
 
 * Reference .bed file containing a list of gene models. Refseq transcripts are recommended.
