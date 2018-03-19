@@ -17,7 +17,6 @@ as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
 -------------------------------------------------------------------------------------------------'''
 import sys,os
-import math
 import pysam
 import numpy as np
 import matplotlib
@@ -28,6 +27,7 @@ from optparse import OptionParser
 from qcmodule import getBamFiles
 from time import strftime
 from scipy.special import smirnov
+from scipy.stats import rankdata
 
 
 def printlog (message):
@@ -122,17 +122,31 @@ def calculate_ks(coverage,read_length):
     read_length: integer, the length of reads.
     Return KS and corresponding P value.
     '''
-    #Calculate KS of transcript.
+    #Calculate mean KS of exons.
     if options.exon:
-        coverage = np.concatenate(coverage)
+        depth = np.concatenate(coverage).sum()
+        mean_ks = 0.0
+        for coverage_i in coverage:
+            depth_i = coverage_i.sum()
+            if depth_i == 0: continue
+            length_i = coverage_i.size
+            max_difference = 0.0 
+            cumulative_coverage = 0.0
+            for i in range(length_i): 
+                cumulative_coverage += coverage_i[i]
+                if abs(max_difference) < abs(cumulative_coverage/depth_i - float(i+1)/length_i):
+                    max_difference = cumulative_coverage/depth_i - float(i+1)/length_i
+            mean_ks += max_difference * depth_i / depth
+        mean_p = smirnov(int(depth/read_length),abs(mean_ks))
+        return mean_ks, mean_p
         
+    #Calculate KS of transcript.
     length = coverage.size
     depth = np.sum(coverage)            #depth = read number * read length
-    
     max_difference = 0.0 
     cumulative_coverage = 0.0
     for i in range(length):
-        #coverage here becomes empirical CDF of coverage.
+        #Coverage here becomes empirical CDF of coverage.
         cumulative_coverage += coverage[i]
         if abs(max_difference) < abs(cumulative_coverage/depth - float(i+1)/length):
             max_difference = cumulative_coverage/depth - float(i+1)/length
@@ -152,36 +166,38 @@ def calculate_ks(coverage,read_length):
     #    if abs(d) < abs(coverage[x]/depth - sum(coverage_expect[0:x])):
     #        d = coverage[x]/depth - sum(coverage_expect[0:x])
     
-    ks = max_difference #* math.sqrt(depth)
+    ks = max_difference 
     p = smirnov(int(depth/read_length),abs(max_difference))
     return ks,p
 
 def calculate_tin(coverage):
     '''
-    coverage: list of integers, coverage on nucleotides.
+    coverage: array of integers, coverage on nucleotides.
     Return TIN value.
     '''
     #Calculate mean TIN of exons.
     if options.exon:
         length = np.concatenate(coverage).size
+        depth = np.concatenate(coverage).sum()
         mean_tin = 0.0
         for coverage_i in coverage:            
-            depth_i = np.sum(coverage_i)
+            depth_i = coverage_i.sum()
+            length_i = coverage_i.size
             entropy = 0.0
             for i in coverage_i: 
                 if i > 0:
-                    entropy += (float(i)/depth_i) * math.log(float(i)/depth_i)    
-            mean_tin += 100*(math.exp(-entropy)) / length
+                    entropy += (float(i)/depth_i) * np.log(float(i)/depth_i)    
+            mean_tin += 100*(np.exp(-entropy)) / length_i * depth_i / depth
         return mean_tin
     
     #Calculate TIN of transcript.
     length = coverage.size
-    depth = np.sum(coverage)      
+    depth = coverage.sum()
     entropy = 0.0
     for i in coverage:
         if i > 0:
-            entropy += (float(i)/depth) * math.log(float(i)/depth)    
-    tin = 100*(math.exp(-entropy)) / length
+            entropy += (float(i)/depth) * np.log(float(i)/depth)    
+    tin = 100*(np.exp(-entropy)) / length
     return tin
 
 def mean_coverage(coverage):
@@ -328,6 +344,25 @@ def summary_transcript():
     plt.text(0.1, 0.9,"r="+str(cor), ha='center', va='center', transform=ax.transAxes)
     plt.savefig('transcript_KS_and_TIN.pdf')
     plt.clf()
+    
+def output_rank():
+    '''
+    Write a file reporting TIN rank in all samples of transcripts. 
+    '''
+    rank_array = np.apply_along_axis(rankdata, 0, tin_array)
+    TIN_RANK = open('TIN_rank.xls','w')
+    print >>TIN_RANK, "\t".join(['gene'] + [i.split('/')[-1][:-4] for i in bamfiles])
+    processed_transcript = 0
+    for line in open(options.ref_bed,'r'):
+        if line.startswith(('#','track','browser')):continue  
+        #Parse fields from BED file. 
+        fields = line.split()
+        name = fields[3]
+        if np.all(tin_array[:,processed_transcript]>0):
+            print >>TIN_RANK, "\t".join([name] + [str(i) for i in rank_array[:,processed_transcript]])
+        processed_transcript += 1
+    TIN_RANK.close()
+        
 
 #Set options.
 usage="%prog [options]" + '\n' + __doc__ + '\n'
@@ -335,7 +370,8 @@ parser = OptionParser(usage)
 parser.add_option("-i","--input",action="store",type="string",dest="input_files",help='Input BAM file(s). "-i" takes these input: 1) a single BAM file. 2) "," separated BAM files (no spaces allowed). 3) directory containing one or more bam files. 4) plain text file containing the path of one or more bam files (Each row is a BAM file path). All BAM files should be sorted and indexed using samtools. [required]')
 parser.add_option("-r","--refbed",action="store",type="string",dest="ref_bed",help='Reference gene model in BED format. Must be strandard 12-column BED file. [required]')
 parser.add_option("-d","--minDepth",action="store",type="int",dest="minimum_average_depth",default=1,help="Minimum average depth on each transcript/exon. default=%default")
-parser.add_option("-e","--exon",action="store_true",dest="exon",help="Calculate adjusted TIN on exons to reduce the effect of alternative splicing. This will result in bigger TIN.")
+parser.add_option("-e","--exon",action="store_true",dest="exon",help="Calculate adjusted KS and TIN on exons to reduce the effect of alternative splicing. This will mostly result in KS closer to 0 and bigger TIN.")
+parser.add_option("-k","--rank",action="store_true",dest="rank",help="Output a xls file reporting the rank of transcript TIN across samples.")
 (options,args)=parser.parse_args()
 
 if not (options.input_files and options.ref_bed):
@@ -365,3 +401,5 @@ tin_array = np.zeros((bamfile_number, transcript_number))
 
 process_bamfiles(bamfiles)
 summary_transcript()
+if options.rank:
+    output_rank()

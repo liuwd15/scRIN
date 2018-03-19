@@ -5,15 +5,10 @@ This program measures the mRNA integrity of samples and gene models.
 You have to install or update some python packages before running this program.   
 
 python >= 2.7   
-
 matplotlib >= 2.2.0   
-
 pysam >= 0.9   
-
 RseQC >= 2.6.4   
-
 numpy any version   
-
 scipy any version   
 
 ## Installation
@@ -44,11 +39,14 @@ The required input files include:
 The simplest usage is:
 > ks_tin.py -r example_refseq.bed -i example_sorted.bam
 
-To reduce the effect of alternative splicing in single cells, use **-e** option to calculate TIN on exons.
+To reduce the effect of alternative splicing in single cells, use **-e** option to calculate adjusted KS and TIN on exons.
 > ks_tin.py -r example_refseq.bed -i example_sorted.bam -e
 
 The gene models with low expression are filted out. The default threshold is average coverage (read length * mapped read number / gene model length) > 1, you can change it with **-d** option.
 > ks_tin.py -r example_refseq.bed -i example_sorted.bam -d 2
+
+If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create a .xls file containing the rank of TIN of transcripts expresses in all samples.
+> ks_tin.py -r example_refseq.bed -i example_sorted.bam -k
 
 It is also recommended that many .bam files should be processed together.
 You can input comma-separated .bam files like this.
@@ -56,11 +54,8 @@ You can input comma-separated .bam files like this.
 
 You can also create a text file containing the path of all .bam files like this.
 > cat samples.txt  
-
 > ~/data/examples/example1/STAR_out/example1_sorted.bam  
-
 > ~/data/examples/example2/STAR_out/example2_sorted.bam  
-
 > ~/data/examples/example3/STAR_out/example3_sorted.bam
 
 Then input the text file.
@@ -79,3 +74,5 @@ Metrics of each gene model include:
 For all samples, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each sample will be created in the **current directory**.   
 
 For all gene models, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each gene model will be created in the **current directory**.  
+
+[option -k enabled] For gene models expressed in all samples, a .xls file containing the ranks of TIN of rach gene model across all samples will be created in the **current directory**.
