@@ -36,7 +36,7 @@ Or you can make it executable and move it to your PATH.
         samtools sort -o example_sorted.bam example.bam  
         samtools index example_sorted.bam
 
-2. Reference [12-column **.bed](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) file** containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/Test/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
+2. Reference [12-column](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) **.bed file** containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/Test/tree/master/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
 
 The simplest usage is:
 
