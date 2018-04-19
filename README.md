@@ -1,5 +1,6 @@
-﻿# Documentation
-This program measures the mRNA integrity of samples and gene models.
+﻿## Introduction
+This python script is used for measuring the mRNA integrity with single-cell sequencing data. The analysis is conducted on 3 levels, sample/cell, gene/transcript and exon.
+mRNA integrity is measured by 2 criteria, KS and TIN. KS measures the read coverage bias and TIN measures the read coverage uniformity on each gene model.
 
 ## Requirements
 You have to install or update some python packages before running this program.   
@@ -14,62 +15,118 @@ scipy any version
 ## Installation
 This program is a python script and works in unix-like operating systems.
 You can download it from [Github](https://github.com/liuwd15/Test/blob/master/ks_tin.py).
-> wget https://github.com/liuwd15/Test/blob/master/ks_tin.py
 
-Then you can run it with python.
-> python ks_tin.py
+    wget https://github.com/liuwd15/Test/blob/master/ks_tin.py
+
+Then run it with python.
+
+    python ks_tin.py
 
 Or you can make it executable and move it to your PATH.
-> chmod +x ks_tin.py  
-> mv ks_tin.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
-> ks_tin.py
+
+    chmod +x ks_tin.py  
+    mv ks_tin.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
+    ks_tin.py
 
 ## Usage
-The required input files include:
+### Required input
 
-* Sorted and indexed .bam file(s). You can use samtools to sort and index a .bam file.
-> samtools sort -o example_sorted.bam example.bam  
-> samtools index example_sorted.bam
+1. Sorted and indexed **.bam** file(s). Samtools can be used to sort and index a .bam file.
 
-* Reference .bed file containing a list of gene models. Refseq transcripts are recommended.
+        samtools sort -o example_sorted.bam example.bam  
+        samtools index example_sorted.bam
+
+2. Reference [12-column **.bed](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) file** containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/Test/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
 
 The simplest usage is:
-> ks_tin.py -r example_refseq.bed -i example_sorted.bam
 
-To reduce the effect of alternative splicing in single cells, use **-e** option to calculate adjusted KS and TIN on exons.
-> ks_tin.py -r example_refseq.bed -i example_sorted.bam -e
-
-The gene models with low expression are filted out. The default threshold is average coverage (read length * mapped read number / gene model length) > 1, you can change it with **-d** option.
-> ks_tin.py -r example_refseq.bed -i example_sorted.bam -d 2
-
-If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create a .xls file containing the rank of TIN of transcripts expresses in all samples.
-> ks_tin.py -r example_refseq.bed -i example_sorted.bam -k
+    ks_tin.py -r example_refseq.bed -i example_sorted.bam
 
 It is also recommended that many .bam files should be processed together.
 You can input comma-separated .bam files like this.
->ks_tin.py -r example_refseq.bed -i example1_sorted.bam,example2_sorted.bam,example3_sorted.bam
+
+    ks_tin.py -r example_refseq.bed -i example1_sorted.bam,example2_sorted.bam,example3_sorted.bam
 
 You can also create a text file containing the path of all .bam files like this.
-> cat samples.txt  
-> ~/data/examples/example1/STAR_out/example1_sorted.bam  
-> ~/data/examples/example2/STAR_out/example2_sorted.bam  
-> ~/data/examples/example3/STAR_out/example3_sorted.bam
+
+    cat samples.txt  
+    ~/data/examples/example1/STAR_out/example1_sorted.bam  
+    ~/data/examples/example2/STAR_out/example2_sorted.bam  
+    ~/data/examples/example3/STAR_out/example3_sorted.bam
 
 Then input the text file.
-> ks_tin.py -r example_refseq.bed -i samples.txt
+
+    ks_tin.py -r example_refseq.bed -i samples.txt
+
+### Other options
+
+To perform additional analysis on exon level, use **-e** option. This will result in more output files, which will be explained in output part in detail.
+
+    ks_tin.py -r example_refseq.bed -i example_sorted.bam -e
+
+The transcripts with low expression are filted out. The default threshold is average coverage (read length * mapped read number / gene model length) > 0.5, you can change it with **-d** option.
+
+    ks_tin.py -r example_refseq.bed -i example_sorted.bam -d 1
+
+If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create a .xls file containing the rank of TIN of transcripts expresses in all samples.
+
+    ks_tin.py -r example_refseq.bed -i example_sorted.bam -k
 
 ## Output
-For each sample(.bam file), a .xls file containing some mRNA integrity metrics of each gene model will be created in the **same directory as .bam file**.
-Metrics of each gene model include:
+### Sample directory
+For each sample(.bam file), following files will be created in the same directory as .bam file.
 
-* Average coverage: read length * mapped read number / gene model length
-* Coverage rate: length of read mapped region / total length
-* TIN: measurement of read coverage uniformity. Ranging from 0 to 100, and high value suggests strong uniformity.
-* KS: measurment of read coverage bias. Ranging from -1 to 1. Value close to -1 suggests 5' bias of read coverage, and value close to 1 suggests 3' bias.
-* P: KS test result of above KS value, under null hypothesis: read coverage is uniform coverage.
+1. A **.metrics.xls** file containing some mRNA integrity metrics of each transcript. Metrics include:
 
-For all samples, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each sample will be created in the **current directory**.   
+* `average_coverage`: read length * mapped read number / gene model length
+* `coverage_rate`: length of read mapped region / total length
+* `transcript_KS`: Measurment of read coverage bias on the whole transcript. Ranging from -1 to 1. Value close to -1 suggests 5' bias of read coverage, and value close to 1 suggests 3' bias.
+* `inter_exon_KS`: Measurment of read coverage bias between exons. Ranging from -1 to 1. Value close to -1 suggests read counts on exons near 5' end are generally bigger than those near 3' end, and value close to 1 suggests the opposite.
+* `transcript_TIN`: Measurement of read coverage uniformity on the whole transcript. Ranging from 0 to 100, and high value suggests strong uniformity.
+* `inter_exon_TIN`: Measurement of read coverage uniformity between exons. Ranging from 0 to 100, and high value suggests strong uniformity.
 
-For all gene models, a .xls file containing 2 overall mRNA integrity metrics (KS and TIN) and a .pdf file plotting overall mRNA integrity of each gene model will be created in the **current directory**.  
+2. A **.KS_TIN.pdf** file containing 2(*3*) scatter plots.
 
-[option -k enabled] For gene models expressed in all samples, a .xls file containing the ranks of TIN of rach gene model across all samples will be created in the **current directory**.
+* `transcript_TIN` vs `transcript_KS` for each transcript.
+* `inter_exon_TIN` vs `inter_exon_KS` for each transcript.
+* *[option -e enabled]* `exon_TIN` vs `exon_KS` for each exon.
+
+3. *[option -e enabled]* A **.exon.xls** file containing metrics of each exon. Metrics include:
+* `exon_KS`: Measurment of read coverage bias on the exon.
+* `exon_TIN`: Measurement of read coverage uniformity on the exons.
+
+### Current directory
+Following files will be created in the current directory.
+
+1. A **summary_sample.xls** file containing the summary metrics of each sample. Metrics include:
+
+* `expressed_transcript`: Number of expressed transcripts.
+* `transcript_KS(mean)`: Mean of transcript KS.
+* `inter_exon_KS(mean)`: Mean of inter exon KS.
+* `transcript_TIN(median)`: Median of transcript TIN.
+* `inter_exon_TIN(median)`: Median of transcript TIN.
+* `transcript_KS(std)`: Standard deviation of transcript KS.
+* `inter_exon_KS(std)`: Standard deviation of inter exon KS.
+* `transcript_TIN(std)`: Standard deviation of transcript TIN.
+* `inter_exon_TIN(std)`: Standard deviation of inter exon TIN.
+
+2. A **summary_sample.pdf** file containing 3 barplots.
+* `transcript_TIN(median)` with `transcript_TIN(std)` as error bar for each sample.
+* `inter_exon_TIN(median)` with `inter_exon_TIN(std)` as error bar for each sample.
+* `expressed_transcript`.
+
+3. A **summary_transcript.xls** file containing the summary metrics of transcript expressed in $\geq80\%$ samples. Metrics are similar as those in 1 but are calculated across samples.
+
+4. A **summary_transcript.pdf** file containing 2 scatter plots.
+
+* `transcript_TIN(median)` vs `transcript_KS(mean)`
+* `inter_exon_TIN(median)` vs `inter_exon_KS(std)`
+
+5. *[option -e enabled]* A **summary_exon.xls** file containing the summary metrics of exon expressed in $\geq80\%$ samples. Metrics include:
+
+* `exon_KS(mean)`: Mean of exon KS across samples.
+* `exon_TIN(median)`: Median of exon TIN across samples.
+* `exon_KS(std)`: Standard deviation of exon KS across samples.
+* `exon_TIN(std)`: Standard deviation of exon TIN across samples.
+
+6. *[option -k enabled]* A **transcript_TIN_rank.xls** file and a **inter_exon_TIN_rank.xls** file containing the ranks of TIN of each transcript across all samples.
