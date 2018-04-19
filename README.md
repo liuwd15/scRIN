@@ -129,4 +129,4 @@ Following files will be created in the current directory.
 * `exon_KS(std)`: Standard deviation of exon KS across samples.
 * `exon_TIN(std)`: Standard deviation of exon TIN across samples.
 
-6. *[option -k enabled]* A **transcript_TIN_rank.xls** file and a **inter_exon_TIN_rank.xls** file containing the ranks of TIN of each transcript across all samples.
+6. *[option -k enabled]* A **transcript_TIN_rank.xls** file and an **inter_exon_TIN_rank.xls** file containing the ranks of TIN of each transcript across all samples.
