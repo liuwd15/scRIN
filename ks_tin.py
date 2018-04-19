@@ -302,8 +302,9 @@ def process_bamfiles(files):
         process_one_bamfile(file, processed_file)
         #Only sum transcripts with high expression for each sample.
         index = expression_level[processed_file] == 2
-        expressed_transcript.append(sum(expression_level[processed_file] > 0))
-        print >>SUM_SAMPLE, "\t".join( [str(i) for i in (os.path.basename(file),expressed_transcript,\
+        expressed = sum(expression_level[processed_file] > 0)
+        expressed_transcript.append(expressed)
+        print >>SUM_SAMPLE, "\t".join( [str(i) for i in (os.path.basename(file),expressed,\
                                         np.mean(ks_array[processed_file,index,0]),\
                                         np.mean(ks_array[processed_file,index,1]),\
                                         np.median(tin_array[processed_file,index,0]),\
