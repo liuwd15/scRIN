@@ -1,5 +1,5 @@
 ﻿## Introduction
-This python script is used for measuring the mRNA integrity with single-cell sequencing data. The analysis is conducted on 3 levels, sample/cell, gene/transcript and exon.
+This python script is used for measuring the mRNA integrity with single-cell sequencing data. The analysis is conducted on 3 levels, sample/cell, gene/transcript and exon.    
 mRNA integrity is measured by 2 criteria, KS and TIN. KS measures the read coverage bias and TIN measures the read coverage uniformity on each gene model.
 
 ## Requirements
@@ -115,14 +115,14 @@ Following files will be created in the current directory.
 * `inter_exon_TIN(median)` with `inter_exon_TIN(std)` as error bar for each sample.
 * `expressed_transcript`.
 
-3. A **summary_transcript.xls** file containing the summary metrics of transcript expressed in $\geq80\%$ samples. Metrics are similar as those in 1 but are calculated across samples.
+3. A **summary_transcript.xls** file containing the summary metrics of transcript expressed in ≥80% samples. Metrics are similar as those in 1 but are calculated across samples.
 
 4. A **summary_transcript.pdf** file containing 2 scatter plots.
 
 * `transcript_TIN(median)` vs `transcript_KS(mean)`
 * `inter_exon_TIN(median)` vs `inter_exon_KS(std)`
 
-5. *[option -e enabled]* A **summary_exon.xls** file containing the summary metrics of exon expressed in $\geq80\%$ samples. Metrics include:
+5. *[option -e enabled]* A **summary_exon.xls** file containing the summary metrics of exon expressed in ≥80% samples. Metrics include:
 
 * `exon_KS(mean)`: Mean of exon KS across samples.
 * `exon_TIN(median)`: Median of exon TIN across samples.
