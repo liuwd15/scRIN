@@ -1,4 +1,9 @@
-﻿## Introduction
+﻿# RINsingle
+
+---
+
+
+## Introduction
 This python script is used for measuring the mRNA integrity with single-cell sequencing data. The analysis is conducted on 3 levels, sample/cell, gene/transcript and exon.    
 mRNA integrity is measured by 2 criteria, KS and TIN. KS measures the read coverage bias and TIN measures the read coverage uniformity on each gene model.
 
@@ -14,7 +19,7 @@ scipy any version
 
 ## Installation
 This program is a python script and works in unix-like operating systems.
-You can download it from [Github](https://github.com/liuwd15/Test/blob/master/ks_tin.py).
+You can download it from [Github](https://github.com/liuwd15/RINsingle/blob/master/RINsingle.py).
 
     wget https://github.com/liuwd15/Test/blob/master/ks_tin.py
 
@@ -36,7 +41,7 @@ Or you can make it executable and move it to your PATH.
         samtools sort -o example_sorted.bam example.bam  
         samtools index example_sorted.bam
 
-2. Reference [12-column](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) **.bed file** containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/Test/tree/master/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
+2. Reference [12-column](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) **.bed file** containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/RINsingle/tree/master/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
 
 The simplest usage is:
 
@@ -67,6 +72,10 @@ To perform additional analysis on exon level, use **-e** option. This will resul
 The transcripts with low expression are filted out. The default threshold is average coverage (read length * mapped read number / gene model length) > 0.5, you can change it with **-d** option.
 
     ks_tin.py -r example_refseq.bed -i example_sorted.bam -d 1
+    
+By default, only transcript/exon expressed in all samples will be summarized in **summary_transcript.xls** file (see Output), you can change this threshold with **-s** option.
+
+    ks_tin.py -r example_refseq.bed -i example_sorted.bam -s 0.8
 
 If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create a .xls file containing the rank of TIN of transcripts expresses in all samples.
 
@@ -80,15 +89,18 @@ For each sample(.bam file), following files will be created in the same director
 
 * `average_coverage`: read length * mapped read number / gene model length
 * `coverage_rate`: length of read mapped region / total length
-* `transcript_KS`: Measurment of read coverage bias on the whole transcript. Ranging from -1 to 1. Value close to -1 suggests 5' bias of read coverage, and value close to 1 suggests 3' bias.
-* `inter_exon_KS`: Measurment of read coverage bias between exons. Ranging from -1 to 1. Value close to -1 suggests read counts on exons near 5' end are generally bigger than those near 3' end, and value close to 1 suggests the opposite.
-* `transcript_TIN`: Measurement of read coverage uniformity on the whole transcript. Ranging from 0 to 100, and high value suggests strong uniformity.
-* `inter_exon_TIN`: Measurement of read coverage uniformity between exons. Ranging from 0 to 100, and high value suggests strong uniformity.
+* `base_level_KS`: Measurment of read coverage bias on the whole transcript. Ranging from -1 to 1. Value close to -1 suggests 5' bias of read coverage, and value close to 1 suggests 3' bias.
+* `exon_level_KS`: Measurment of read coverage bias between exons. Ranging from -1 to 1. Value close to -1 suggests read counts on exons near 5' end are generally bigger than those near 3' end, and value close to 1 suggests the opposite.
+* `exon_average_KS`: Measurment of read coverage bias within exons. Ranging from -1 to 1. Value close to -1 suggests read counts within exons generally have 5' bias, and value close to 1 suggests the opposite.
+* `base_level_TIN`: Measurement of read coverage uniformity on the whole transcript. Ranging from 0 to 100, and high value suggests strong uniformity.
+* `exon_level_TIN`: Measurement of read coverage uniformity between exons. Ranging from 0 to 100, and high value suggests strong uniformity.
+* `exon_average_TIN`: Measurment of read coverage uniformity within exons. Ranging from 0 to 100, and high value suggests strong uniformity.
 
 2. A **.KS_TIN.pdf** file containing 2(*3*) scatter plots.
 
-* `transcript_TIN` vs `transcript_KS` for each transcript.
-* `inter_exon_TIN` vs `inter_exon_KS` for each transcript.
+* `base_level_TIN` vs `base_level_KS` for each transcript.
+* `exon_level_TIN` vs `exon_level_KS` for each transcript.
+* `exon_average_TIN` vs `exon_average_KS` for each transcript.
 * *[option -e enabled]* `exon_TIN` vs `exon_KS` for each exon.
 
 3. *[option -e enabled]* A **.exon.xls** file containing metrics of each exon. Metrics include:
@@ -101,32 +113,38 @@ Following files will be created in the current directory.
 1. A **summary_sample.xls** file containing the summary metrics of each sample. Metrics include:
 
 * `expressed_transcript`: Number of expressed transcripts.
-* `transcript_KS(mean)`: Mean of transcript KS.
-* `inter_exon_KS(mean)`: Mean of inter exon KS.
-* `transcript_TIN(median)`: Median of transcript TIN.
-* `inter_exon_TIN(median)`: Median of transcript TIN.
-* `transcript_KS(std)`: Standard deviation of transcript KS.
-* `inter_exon_KS(std)`: Standard deviation of inter exon KS.
-* `transcript_TIN(std)`: Standard deviation of transcript TIN.
-* `inter_exon_TIN(std)`: Standard deviation of inter exon TIN.
+* `base_level_KS(mean)`: Mean of transcript KS.
+* `exon_level_KS(mean)`: Mean of exon level KS.
+* `exon_average_KS(mean)`: Mean of exon average KS.
+* `base_level_TIN(median)`: Median of transcript TIN.
+* `exon_level_TIN(median)`: Median of exon level TIN.
+* `exon_average_TIN(median)`: Median of exon average TIN.
+* `base_level_KS(std)`: Standard deviation of transcript KS.
+* `exon_level_KS(std)`: Standard deviation of exon level KS.
+* `exon_average_KS(std)`: Standard deviation of exon average KS.
+* `base_level_TIN(std)`: Standard deviation of transcript TIN.
+* `exon_level_TIN(std)`: Standard deviation of exon level TIN.
+* `exon_average_TIN(std)`: Standard deviation of exon average TIN.
 
-2. A **summary_sample.pdf** file containing 3 barplots.
-* `transcript_TIN(median)` with `transcript_TIN(std)` as error bar for each sample.
-* `inter_exon_TIN(median)` with `inter_exon_TIN(std)` as error bar for each sample.
+2. A **summary_sample.pdf** file containing 4 barplots.
+* `base_level_TIN(median)` with `base_level_TIN(std)` as error bar for each sample.
+* `exon_level_TIN(median)` with `exon_level_TIN(std)` as error bar for each sample.
+* `exon_average_TIN(median)` with `exon_average_TIN(std)` as error bar for each sample.
 * `expressed_transcript`.
 
-3. A **summary_transcript.xls** file containing the summary metrics of transcript expressed in ≥80% samples. Metrics are similar as those in 1 but are calculated across samples.
+3. A **summary_transcript.xls** file containing the summary metrics of transcript expressed in all samples. Metrics are similar as those in 1 but are calculated across samples.
 
-4. A **summary_transcript.pdf** file containing 2 scatter plots.
+4. A **summary_transcript.pdf** file containing 3 scatter plots.
 
-* `transcript_TIN(median)` vs `transcript_KS(mean)`
-* `inter_exon_TIN(median)` vs `inter_exon_KS(std)`
+* `base_level_TIN(median)` vs `base_level_KS(mean)`
+* `exon_level_TIN(median)` vs `exon_level_KS(mean)`
+* `exon_average_TIN(median)` vs `exon_aveage_KS(mean)`
 
-5. *[option -e enabled]* A **summary_exon.xls** file containing the summary metrics of exon expressed in ≥80% samples. Metrics include:
+5. *[option -e enabled]* A **summary_exon.xls** file containing the summary metrics of exon expressed in all samples. Metrics include:
 
 * `exon_KS(mean)`: Mean of exon KS across samples.
 * `exon_TIN(median)`: Median of exon TIN across samples.
 * `exon_KS(std)`: Standard deviation of exon KS across samples.
 * `exon_TIN(std)`: Standard deviation of exon TIN across samples.
 
-6. *[option -k enabled]* A **transcript_TIN_rank.xls** file and an **inter_exon_TIN_rank.xls** file containing the ranks of TIN of each transcript across all samples.
+6. *[option -k enabled]* Three files **base_level_TIN_rank.xls**, **exon_level_TIN_rank.xls** and **exon_average_TIN_rank.xls** containing the ranks of TIN of each transcript across all samples.
