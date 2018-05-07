@@ -220,8 +220,8 @@ def process_one_bamfile(file, processed_file):
     #Details of each transcript.
     OUT = open(file.replace('bam','') + 'metrics.xls','w')
     print >>OUT, '\t'.join(['gene','chrom','length','exon_number','average_coverage','coverage_rate',\
-                            'base_level_ks','exon_level_KS','exon_average_KS',\
-                            'base_level_tin','exon_level_TIN','exon_average_TIN'])
+                            'base_level_KS','exon_level_KS','exon_average_KS',\
+                            'base_level_TIN','exon_level_TIN','exon_average_TIN'])
     EXON = ''
     if options.exon:
         EXON = open(file.replace('bam','') + 'exon_metrics.xls','w')
@@ -322,10 +322,10 @@ def process_bamfiles(files):
     #Summary file of all samples.
     SUM_SAMPLE = open('summary_sample.xls','w')
     print >>SUM_SAMPLE, '\t'.join(['Bam_file','expressed_transcript',\
-                                   'base_level_ks(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
-                                   'base_level_tin(median)','exon_level_TIN(median)','exon_average_TIN(mean)',\
-                                   'base_level_ks(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
-                                   'base_level_tin(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])
+                                   'base_level_KS(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
+                                   'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(mean)',\
+                                   'base_level_KS(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
+                                   'base_level_TIN(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])
     sample_names = []
     sample_median_tins = []
     sample_tin_sds = []
@@ -396,10 +396,10 @@ def summary_transcript():
     #Summary file of high expression transcripts.
     SUM_TRANSCRIPT = open('summary_transcript.xls','w')
     print >>SUM_TRANSCRIPT, '\t'.join(['transcript','chrom',\
-                                       'base_level_ks(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
-                                       'base_level_tin(median)','exon_level_TIN(median)','exon_average_TIN(mean)',\
-                                       'base_level_ks(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
-                                       'base_level_tin(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])   
+                                       'base_level_KS(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
+                                       'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(mean)',\
+                                       'base_level_KS(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
+                                       'base_level_TIN(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])   
     processed_transcript = 0
     tins = []
     kss = [] 
@@ -487,7 +487,7 @@ def output_rank():
     for i in range(3):
         rank_array = np.apply_along_axis(rankdata, 0, tin_array[:,:,i])
         if i == 0:
-            rank_file = 'base_level_tin_rank.xls'
+            rank_file = 'base_level_TIN_rank.xls'
         elif i == 1:
             rank_file = 'exon_level_TIN_rank.xls'
         else:
