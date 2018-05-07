@@ -21,17 +21,17 @@ scipy any version
 This program is a python script and works in unix-like operating systems.
 You can download it from [Github](https://github.com/liuwd15/RINsingle/blob/master/RINsingle.py).
 
-    wget https://github.com/liuwd15/Test/blob/master/ks_tin.py
+    wget https://github.com/liuwd15/Test/blob/master/RINsingle.py
 
 Then run it with python.
 
-    python ks_tin.py
+    python RINsingle.py
 
 Or you can make it executable and move it to your PATH.
 
-    chmod +x ks_tin.py  
-    mv ks_tin.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
-    ks_tin.py
+    chmod +x RINsingle.py  
+    mv RINsingle.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
+    RINsingle.py
 
 ## Usage
 ### Required input
@@ -41,16 +41,16 @@ Or you can make it executable and move it to your PATH.
         samtools sort -o example_sorted.bam example.bam  
         samtools index example_sorted.bam
 
-2. Reference [12-column](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) **.bed file** containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/RINsingle/tree/master/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
+2. Reference [12-column](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) **.bed** file containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/RINsingle/tree/master/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
 
 The simplest usage is:
 
-    ks_tin.py -r example_refseq.bed -i example_sorted.bam
+    RINsingle.py -r example_refseq.bed -i example_sorted.bam
 
 It is also recommended that many .bam files should be processed together.
 You can input comma-separated .bam files like this.
 
-    ks_tin.py -r example_refseq.bed -i example1_sorted.bam,example2_sorted.bam,example3_sorted.bam
+    RINsingle.py -r example_refseq.bed -i example1_sorted.bam,example2_sorted.bam,example3_sorted.bam
 
 You can also create a text file containing the path of all .bam files like this.
 
@@ -61,25 +61,25 @@ You can also create a text file containing the path of all .bam files like this.
 
 Then input the text file.
 
-    ks_tin.py -r example_refseq.bed -i samples.txt
+    RINsingle.py -r example_refseq.bed -i samples.txt
 
 ### Other options
 
-To perform additional analysis on exon level, use **-e** option. This will result in more output files, which will be explained in output part in detail.
+To perform additional analysis on exon level, use **-e** option. This will result in more output files (see Output).
 
-    ks_tin.py -r example_refseq.bed -i example_sorted.bam -e
+    RINsingle.py -r example_refseq.bed -i example_sorted.bam -e
 
 The transcripts with low expression are filted out. The default threshold is average coverage (read length * mapped read number / gene model length) > 0.5, you can change it with **-d** option.
 
-    ks_tin.py -r example_refseq.bed -i example_sorted.bam -d 1
+    RINsingle.py -r example_refseq.bed -i example_sorted.bam -d 1
     
 By default, only transcript/exon expressed in all samples will be summarized in **summary_transcript.xls** file (see Output), you can change this threshold with **-s** option.
 
-    ks_tin.py -r example_refseq.bed -i example_sorted.bam -s 0.8
+    RINsingle.py -r example_refseq.bed -i example_sorted.bam -s 0.8
 
-If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create a .xls file containing the rank of TIN of transcripts expresses in all samples.
+If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create .xls files containing the rank of TIN of transcripts expresses in all samples.
 
-    ks_tin.py -r example_refseq.bed -i example_sorted.bam -k
+    RINsingle.py -r example_refseq.bed -i example_sorted.bam -k
 
 ## Output
 ### Sample directory
@@ -96,7 +96,7 @@ For each sample(.bam file), following files will be created in the same director
 * `exon_level_TIN`: Measurement of read coverage uniformity between exons. Ranging from 0 to 100, and high value suggests strong uniformity.
 * `exon_average_TIN`: Measurment of read coverage uniformity within exons. Ranging from 0 to 100, and high value suggests strong uniformity.
 
-2. A **.KS_TIN.pdf** file containing 2(*3*) scatter plots.
+2. A **.RINsingle.pdf** file containing 2(*3*) scatter plots.
 
 * `base_level_TIN` vs `base_level_KS` for each transcript.
 * `exon_level_TIN` vs `exon_level_KS` for each transcript.
