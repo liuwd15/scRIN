@@ -323,7 +323,7 @@ def process_bamfiles(files):
     SUM_SAMPLE = open('summary_sample.xls','w')
     print >>SUM_SAMPLE, '\t'.join(['Bam_file','expressed_transcript',\
                                    'base_level_KS(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
-                                   'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(mean)',\
+                                   'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(median)',\
                                    'base_level_KS(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
                                    'base_level_TIN(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])
     sample_names = []
@@ -397,7 +397,7 @@ def summary_transcript():
     SUM_TRANSCRIPT = open('summary_transcript.xls','w')
     print >>SUM_TRANSCRIPT, '\t'.join(['transcript','chrom',\
                                        'base_level_KS(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
-                                       'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(mean)',\
+                                       'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(median)',\
                                        'base_level_KS(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
                                        'base_level_TIN(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])   
     processed_transcript = 0

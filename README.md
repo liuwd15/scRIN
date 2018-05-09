@@ -1,4 +1,4 @@
-﻿# RINsingle
+﻿# RINsingle Documentation
 
 ---
 
@@ -89,6 +89,7 @@ For each sample(.bam file), following files will be created in the same director
 
 * `average_coverage`: read length * mapped read number / gene model length
 * `coverage_rate`: length of read mapped region / total length
+* `exon_number`: number of exons
 * `base_level_KS`: Measurment of read coverage bias on the whole transcript. Ranging from -1 to 1. Value close to -1 suggests 5' bias of read coverage, and value close to 1 suggests 3' bias.
 * `exon_level_KS`: Measurment of read coverage bias between exons. Ranging from -1 to 1. Value close to -1 suggests read counts on exons near 5' end are generally bigger than those near 3' end, and value close to 1 suggests the opposite.
 * `exon_average_KS`: Measurment of read coverage bias within exons. Ranging from -1 to 1. Value close to -1 suggests read counts within exons generally have 5' bias, and value close to 1 suggests the opposite.
