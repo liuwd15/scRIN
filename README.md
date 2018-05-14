@@ -14,8 +14,7 @@ python >= 2.7
 matplotlib >= 2.2.0   
 pysam >= 0.9   
 RseQC >= 2.6.4   
-numpy any version   
-scipy any version   
+numpy  
 
 ## Installation
 This program is a python script and works in unix-like operating systems.
@@ -73,9 +72,9 @@ The transcripts with low expression are filted out. The default threshold is ave
 
     RINsingle.py -r example_refseq.bed -i example_sorted.bam -d 1
     
-By default, only transcript/exon expressed in all samples will be summarized in **summary_transcript.xls** file (see Output), you can change this threshold with **-s** option.
+By default, only transcript/exon expressed in more than 3 samples will be summarized in **summary_transcript.xls** file (see Output), you can change this threshold with **-s** option.
 
-    RINsingle.py -r example_refseq.bed -i example_sorted.bam -s 0.8
+    RINsingle.py -r example_refseq.bed -i example_sorted.bam -s 5
 
 If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create .xls files containing the rank of TIN of transcripts expresses in all samples.
 
@@ -97,7 +96,7 @@ For each sample(.bam file), following files will be created in the same director
 * `exon_level_TIN`: Measurement of read coverage uniformity between exons. Ranging from 0 to 100, and high value suggests strong uniformity.
 * `exon_average_TIN`: Measurment of read coverage uniformity within exons. Ranging from 0 to 100, and high value suggests strong uniformity.
 
-2. A **.RINsingle.pdf** file containing 2(*3*) scatter plots.
+2. A **.KS_TIN.pdf** file containing 3(*4*) scatter plots.
 
 * `base_level_TIN` vs `base_level_KS` for each transcript.
 * `exon_level_TIN` vs `exon_level_KS` for each transcript.

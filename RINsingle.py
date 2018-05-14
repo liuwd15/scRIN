@@ -409,8 +409,8 @@ def summary_transcript():
         fields = line.split()
         chrom = fields[0]
         name = fields[3]
-        #Only output transcript with high expression in more than certain ratio of samples.
-        if np.mean(expression_level[:,processed_transcript]==2) >= options.minimum_sample_ratio:
+        #Only output transcript with high expression in more than certain number of samples.
+        if np.sum(expression_level[:,processed_transcript]==2) > options.minimum_sample:
             print >>SUM_TRANSCRIPT, '\t'.join( [str(i) for i in (name, chrom,\
                                                 np.mean(ks_array[:,processed_transcript,0]),\
                                                 np.mean(ks_array[:,processed_transcript,1]),\
@@ -470,8 +470,8 @@ def summary_exon():
         name = fields[3]
         exon_number = int(fields[9])
         for i in range(exon_number):
-            #Only output exon expressed in more than certain ratio of samples.
-            if np.mean(exon_array[:,processed_exon,0]!=0) >= options.minimum_sample_ratio:
+            #Only output exon expressed in more than certain number of samples.
+            if np.sum(exon_array[:,processed_exon,0]!=0) >= options.minimum_sample:
                 print >> SUM_EXON, '\t'.join([name+'.'+str(i+1), chrom,\
                                               str(np.mean(exon_array[:,processed_exon,0])),\
                                               str(np.median(exon_array[:,processed_exon,1])),\
@@ -512,7 +512,7 @@ parser = OptionParser(usage)
 parser.add_option('-i','--input',action='store',type='string',dest='input_files',help="Input BAM file(s). Must be one of followings: 1) a single BAM file. 2) ',' separated BAM files (no spaces allowed). 3) directory containing one or more bam files. 4) plain text file containing the path of one or more bam files (Each row is a BAM file path). All BAM files should be sorted and indexed using samtools. [required]")
 parser.add_option('-r','--refbed',action='store',type='string',dest='ref_bed',help='Reference gene model in BED format. Must be strandard 12-column BED file. [required]')
 parser.add_option('-d','--minDepth',action='store',type='float',dest='minimum_average_depth',default=0.5,help='Minimum average depth for each transcript to be processed. default=%default')
-parser.add_option('-s','--minSample',action='store',type='float',dest='minimum_sample_ratio',default=1.0,help='Minimum ratio of samples expressing a transcript/exon. Only transcript/exon expressed in greater than this ratio of samples will be summarized. default=%default')
+parser.add_option('-s','--minSample',action='store',type='float',dest='minimum_sample',default=3,help='Minimum number of samples expressing a transcript/exon. Only transcript/exon expressed in greater than this number of samples will be summarized. default=%default')
 parser.add_option('-e','--exon',action='store_true',dest='exon',help='Output a xls file reporting intra-exon KS and TIN of each exon.')
 parser.add_option('-k','--rank',action='store_true',dest='rank',help='Output a xls file reporting the rank of median transcript TIN across samples.')
 (options,args)=parser.parse_args()
