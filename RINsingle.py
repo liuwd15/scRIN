@@ -410,22 +410,23 @@ def summary_transcript():
         chrom = fields[0]
         name = fields[3]
         #Only output transcript with high expression in more than certain number of samples.
-        if np.sum(expression_level[:,processed_transcript]==2) > options.minimum_sample:
+        expressing_samples = expression_level[:,processed_transcript] == 2
+        if np.sum(expressing_samples) > options.minimum_sample:
             print >>SUM_TRANSCRIPT, '\t'.join( [str(i) for i in (name, chrom,\
-                                                np.mean(ks_array[:,processed_transcript,0]),\
-                                                np.mean(ks_array[:,processed_transcript,1]),\
-                                                np.mean(ks_array[:,processed_transcript,2]),\
-                                                np.median(tin_array[:,processed_transcript,0]),\
-                                                np.median(tin_array[:,processed_transcript,1]),\
-                                                np.median(tin_array[:,processed_transcript,2]),\
-                                                np.std(ks_array[:,processed_transcript,0]),\
-                                                np.std(ks_array[:,processed_transcript,1]),\
-                                                np.std(ks_array[:,processed_transcript,2]),\
-                                                np.std(tin_array[:,processed_transcript,0]),\
-                                                np.std(tin_array[:,processed_transcript,1]),\
-                                                np.std(tin_array[:,processed_transcript,2]))])
-            tins.append([np.median(tin_array[:,processed_transcript,i]) for i in range(3)])
-            kss.append([np.mean(ks_array[:,processed_transcript,i]) for i in range(3)])
+                                                np.mean(ks_array[expressing_samples,processed_transcript,0]),\
+                                                np.mean(ks_array[expressing_samples,processed_transcript,1]),\
+                                                np.mean(ks_array[expressing_samples,processed_transcript,2]),\
+                                                np.median(tin_array[expressing_samples,processed_transcript,0]),\
+                                                np.median(tin_array[expressing_samples,processed_transcript,1]),\
+                                                np.median(tin_array[expressing_samples,processed_transcript,2]),\
+                                                np.std(ks_array[expressing_samples,processed_transcript,0]),\
+                                                np.std(ks_array[expressing_samples,processed_transcript,1]),\
+                                                np.std(ks_array[expressing_samples,processed_transcript,2]),\
+                                                np.std(tin_array[expressing_samples,processed_transcript,0]),\
+                                                np.std(tin_array[expressing_samples,processed_transcript,1]),\
+                                                np.std(tin_array[expressing_samples,processed_transcript,2]))])
+            tins.append([np.median(tin_array[expressing_samples,processed_transcript,i]) for i in range(3)])
+            kss.append([np.mean(ks_array[expressing_samples,processed_transcript,i]) for i in range(3)])
         processed_transcript += 1
         
     SUM_TRANSCRIPT.close()
@@ -471,12 +472,13 @@ def summary_exon():
         exon_number = int(fields[9])
         for i in range(exon_number):
             #Only output exon expressed in more than certain number of samples.
-            if np.sum(exon_array[:,processed_exon,0]!=0) >= options.minimum_sample:
+            expressing_samples = exon_array[:,processed_exon,0] != 0
+            if np.sum(expressing_samples) >= options.minimum_sample:
                 print >> SUM_EXON, '\t'.join([name+'.'+str(i+1), chrom,\
-                                              str(np.mean(exon_array[:,processed_exon,0])),\
-                                              str(np.median(exon_array[:,processed_exon,1])),\
-                                              str(np.std(exon_array[:,processed_exon,0])),\
-                                              str(np.std(exon_array[:,processed_exon,1]))])
+                                              str(np.mean(exon_array[expressing_samples,processed_exon,0])),\
+                                              str(np.median(exon_array[expressing_samples,processed_exon,1])),\
+                                              str(np.std(exon_array[expressing_samples,processed_exon,0])),\
+                                              str(np.std(exon_array[expressing_samples,processed_exon,1]))])
             processed_exon += 1        
     SUM_EXON.close()
   
