@@ -13,7 +13,7 @@ You have to install or update some python packages before running this program.
 python >= 2.7   
 matplotlib >= 2.2.0   
 pysam >= 0.9   
-RseQC >= 2.6.4   
+RSeQC >= 2.6.4   
 numpy  
 
 ## Installation
