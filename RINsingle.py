@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 '''-------------------------------------------------------------------------------------------------
 This program calculates KS, TIN and some other metrics for each transcript in BED file.
 
@@ -550,8 +550,10 @@ if options.exon:
     exon_array = np.zeros([bamfile_number, exon_number, 2])
     
 process_bamfiles(bamfiles)
-summary_transcript()
-if options.exon:
-    summary_exon()
+#Only when sample number is greater then the minimun sample number will output transcript and exon summary.
+if bamfile_number > options.minimum_sample:
+    summary_transcript()
+    if options.exon:
+        summary_exon()
 if options.rank:
     output_rank()

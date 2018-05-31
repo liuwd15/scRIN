@@ -13,7 +13,7 @@ You have to install or update some python packages before running this program.
 python >= 2.7   
 matplotlib >= 2.2.0   
 pysam >= 0.9   
-RseQC >= 2.6.4   
+RSeQC >= 2.6.4   
 numpy  
 
 ## Installation
@@ -72,7 +72,7 @@ The transcripts with low expression are filted out. The default threshold is ave
 
     RINsingle.py -r example_refseq.bed -i example_sorted.bam -d 1
     
-By default, only transcript/exon expressed in more than 3 samples will be summarized in **summary_transcript.xls** file (see Output), you can change this threshold with **-s** option.
+By default, only transcript/exon expressed in more than 3 samples will be summarized in **summary_transcript.xls** file (see Output), you can change this threshold with **-s** option. Noticing that only when the number of input files is more than this threshold will transcript/exon be summarized.
 
     RINsingle.py -r example_refseq.bed -i example_sorted.bam -s 5
 
