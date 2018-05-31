@@ -18,9 +18,9 @@ numpy
 
 ## Installation
 This program is a python script and works in unix-like operating systems.
-You can download it from [Github](https://github.com/liuwd15/RINsingle/blob/master/RINsingle.py).
+You can download it from [Github](https://raw.githubusercontent.com/liuwd15/RINsingle/master/RINsingle.py).
 
-    wget https://github.com/liuwd15/Test/blob/master/RINsingle.py
+    wget https://raw.githubusercontent.com/liuwd15/RINsingle/master/RINsingle.py
 
 Then run it with python.
 
