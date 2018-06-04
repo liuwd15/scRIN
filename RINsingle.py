@@ -165,46 +165,46 @@ def calculate_ks_tin(exon_coverages, name, strand, EXON, processed_file, process
     exon_coverages: list of array of integers, coverage on exons of one transcript.
     name: string, the name of the transcript.
     strand: string, either '+' or '-', the strand of the transcript.
-    EXON: file, optional file to output intra-exon KS and TIN.
+    EXON: file, optional file to output exon KS and TIN.
     processed_file: int, number of processed files.
     processed_exon: int, number of processes exons.
-    Return two arrays: base-level KS, exon-level KS, exon-average KS and same for TIN.
+    Return two arrays: base-level KS, inter-exon KS, intra-exon KS and same for TIN.
     '''
     exon_kss = []
     exon_tins = []
-    exon_average_coverages = []
+    intra_exon_coverages = []
     depth = np.concatenate(exon_coverages).sum()
-    exon_average_ks = 0.0
-    exon_average_tin = 0.0
+    intra_exon_ks = 0.0
+    intra_exon_tin = 0.0
     
     for exon_coverage in exon_coverages:
-        exon_average_coverages.append(exon_coverage.mean())
+        intra_exon_coverages.append(exon_coverage.mean())
         #This step make sure that 3' bias results in positive KS and 5' bias results in negative KS.     
         exon_ks = ks_value(exon_coverage, strand)
         exon_kss.append(exon_ks)
-        exon_average_ks += exon_ks * exon_coverage.sum() / depth
+        intra_exon_ks += exon_ks * exon_coverage.sum() / depth
         
         exon_tin = tin_value(exon_coverage)
         exon_tins.append(exon_tin)
-        exon_average_tin += exon_tin * exon_coverage.sum() / depth
+        intra_exon_tin += exon_tin * exon_coverage.sum() / depth
       
     #KS and TIN of full length transcript.    
     base_level_ks = ks_value(np.concatenate(exon_coverages), strand)   
     base_level_tin = tin_value(np.concatenate(exon_coverages))
     #KS and TIN calculated by averaging coverage on each exon.
-    exon_level_ks = ks_value(np.array(exon_average_coverages), strand)
-    exon_level_tin = tin_value(np.array(exon_average_coverages))  
+    inter_exon_ks = ks_value(np.array(intra_exon_coverages), strand)
+    inter_exon_tin = tin_value(np.array(intra_exon_coverages))  
     
     if options.exon:
         exon_number = len(exon_kss)
         exon_array[processed_file, processed_exon:(processed_exon+exon_number), 0] = exon_kss
         exon_array[processed_file, processed_exon:(processed_exon+exon_number), 1] = exon_tins
         for i in range(exon_number):
-            print >> EXON, '\t'.join([name+'.'+str(i+1), str(exon_average_coverages[i]),\
+            print >> EXON, '\t'.join([name+'.'+str(i+1), str(intra_exon_coverages[i]),\
                                       str(exon_kss[i]), str(exon_tins[i])])
                
-    return np.array([base_level_ks, exon_level_ks, exon_average_ks]),\
-           np.array([base_level_tin, exon_level_tin, exon_average_tin])
+    return np.array([base_level_ks, inter_exon_ks, intra_exon_ks]),\
+           np.array([base_level_tin, inter_exon_tin, intra_exon_tin])
 
 
 def process_one_bamfile(file, processed_file):
@@ -220,8 +220,8 @@ def process_one_bamfile(file, processed_file):
     #Details of each transcript.
     OUT = open(file.replace('bam','') + 'metrics.xls','w')
     print >>OUT, '\t'.join(['gene','chrom','length','exon_number','average_coverage','coverage_rate',\
-                            'base_level_KS','exon_level_KS','exon_average_KS',\
-                            'base_level_TIN','exon_level_TIN','exon_average_TIN'])
+                            'base_level_KS','inter_exon_KS','intra_exon_KS',\
+                            'base_level_TIN','inter_exon_TIN','intra_exon_TIN'])
     EXON = ''
     if options.exon:
         EXON = open(file.replace('bam','') + 'exon_metrics.xls','w')
@@ -279,17 +279,17 @@ def process_one_bamfile(file, processed_file):
         plt.scatter(exon_array[processed_file,exon_index,0], exon_array[processed_file,exon_index,1], s=3)
         plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
         plt.xlabel("5' bias <-- KS --> 3' bias")
-        plt.title('Intra-exon KS and TIN')
+        plt.title('Exon KS and TIN')
         plt.subplot(223)
         plt.scatter(ks_array[processed_file,index,1], tin_array[processed_file,index,1], s=3)
         plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
         plt.xlabel("5' bias <-- KS --> 3' bias")
-        plt.title('Exon-level KS and TIN')
+        plt.title('Inter-exon KS and TIN')
         plt.subplot(224)
         plt.scatter(ks_array[processed_file,index,1], tin_array[processed_file,index,1], s=3)
         plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
         plt.xlabel("5' bias <-- KS --> 3' bias")
-        plt.title('Exon-average KS and TIN')
+        plt.title('Intra-exon KS and TIN')
         plt.savefig(file.replace('bam','') + 'KS_TIN.pdf')
         plt.clf()
     else:
@@ -303,13 +303,13 @@ def process_one_bamfile(file, processed_file):
         plt.scatter(ks_array[processed_file,index,1], tin_array[processed_file,index,1], s=3)
         plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
         plt.xlabel("5' bias <-- KS --> 3' bias")
-        plt.title('Exon-level KS and TIN')
+        plt.title('Inter-exon KS and TIN')
         plt.savefig(file.replace('bam','') + 'KS_TIN.pdf')
         plt.subplot(224)
         plt.scatter(ks_array[processed_file,index,1], tin_array[processed_file,index,1], s=3)
         plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
         plt.xlabel("5' bias <-- KS --> 3' bias")
-        plt.title('Exon-average KS and TIN')
+        plt.title('Intra-exon KS and TIN')
         plt.savefig(file.replace('bam','') + 'KS_TIN.pdf')
         plt.clf()
 
@@ -322,12 +322,12 @@ def process_bamfiles(files):
     #Summary file of all samples.
     SUM_SAMPLE = open('summary_sample.xls','w')
     print >>SUM_SAMPLE, '\t'.join(['Bam_file','expressed_transcript',\
-                                   'base_level_KS(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
-                                   'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(median)',\
-                                   'base_level_KS(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
-                                   'base_level_TIN(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])
+                                   'base_level_KS(mean)','inter_exon_KS(mean)','intra_exon_KS(mean)',\
+                                   'base_level_TIN(mean)','inter_exon_TIN(mean)','intra_exon_TIN(mean)',\
+                                   'base_level_KS(sd)','inter_exon_KS(sd)','intra_exon_KS(sd)',\
+                                   'base_level_TIN(sd)','inter_exon_TIN(sd)','intra_exon_TIN(sd)'])
     sample_names = []
-    sample_median_tins = []
+    sample_mean_tins = []
     sample_tin_sds = []
     expressed_transcript = []
 
@@ -343,43 +343,43 @@ def process_bamfiles(files):
                                         np.mean(ks_array[processed_file,index,0]),\
                                         np.mean(ks_array[processed_file,index,1]),\
                                         np.mean(ks_array[processed_file,index,2]),\
-                                        np.median(tin_array[processed_file,index,0]),\
-                                        np.median(tin_array[processed_file,index,1]),\
-                                        np.median(tin_array[processed_file,index,2]),\
+                                        np.mean(tin_array[processed_file,index,0]),\
+                                        np.mean(tin_array[processed_file,index,1]),\
+                                        np.mean(tin_array[processed_file,index,2]),\
                                         np.std(ks_array[processed_file,index,0]),\
                                         np.std(ks_array[processed_file,index,1]),\
                                         np.std(ks_array[processed_file,index,2]),\
                                         np.std(tin_array[processed_file,index,0]),\
                                         np.std(tin_array[processed_file,index,1]),\
                                         np.std(tin_array[processed_file,index,2]))])
-        sample_median_tins.append([np.median(tin_array[processed_file,index,i]) for i in range(3)])                                
+        sample_mean_tins.append([np.mean(tin_array[processed_file,index,i]) for i in range(3)])                                
         sample_tin_sds.append([np.std(tin_array[processed_file,index,i]) for i in range(3)])
         sample_names.append(file.split('/')[-1][:-4])
         processed_file += 1
     
     SUM_SAMPLE.close()
-    sample_median_tins = np.array(sample_median_tins)
+    sample_mean_tins = np.array(sample_mean_tins)
     sample_tin_sds = np.array(sample_tin_sds)
     
-    #Plot the median TINs of samples.
+    #Plot the mean TINs of samples.
     index = np.arange(bamfile_number)
     if bamfile_number > 50:
         plt.figure(figsize = [bamfile_number/5, 20])
     else:
         plt.figure(figsize = [10,20])
     plt.subplot(411)   
-    plt.bar(index, sample_median_tins[:,0], yerr=sample_tin_sds[:,0], color='deepskyblue')
+    plt.bar(index, sample_mean_tins[:,0], yerr=sample_tin_sds[:,0], color='deepskyblue')
     plt.xticks([])    
-    plt.title('Median base-level TIN of samples')
+    plt.title('Mean base-level TIN of samples')
     plt.subplot(412)
-    plt.bar(index, sample_median_tins[:,1], yerr=sample_tin_sds[:,1], color='deepskyblue')
+    plt.bar(index, sample_mean_tins[:,1], yerr=sample_tin_sds[:,1], color='deepskyblue')
     plt.xticks([])
-    plt.ylabel('nonuniform coverage <-- median TIN --> uniform coverage') 
-    plt.title('Median exon-level TIN of samples')
+    plt.ylabel('nonuniform coverage <-- mean TIN --> uniform coverage') 
+    plt.title('Mean inter-exon TIN of samples')
     plt.subplot(413)
-    plt.bar(index, sample_median_tins[:,2], yerr=sample_tin_sds[:,2], color='deepskyblue')
+    plt.bar(index, sample_mean_tins[:,2], yerr=sample_tin_sds[:,2], color='deepskyblue')
     plt.xticks([])   
-    plt.title('Median exon-average TIN of samples')
+    plt.title('Mean intra-exon TIN of samples')
     plt.subplot(414)
     plt.bar(index, expressed_transcript, color='deepskyblue')   
     plt.xticks(index, sample_names, rotation=90, fontsize=5)
@@ -396,10 +396,10 @@ def summary_transcript():
     #Summary file of high expression transcripts.
     SUM_TRANSCRIPT = open('summary_transcript.xls','w')
     print >>SUM_TRANSCRIPT, '\t'.join(['transcript','chrom',\
-                                       'base_level_KS(mean)','exon_level_KS(mean)','exon_average_KS(mean)',\
-                                       'base_level_TIN(median)','exon_level_TIN(median)','exon_average_TIN(median)',\
-                                       'base_level_KS(sd)','exon_level_KS(sd)','exon_average_KS(sd)',\
-                                       'base_level_TIN(sd)','exon_level_TIN(sd)','exon_average_TIN(sd)'])   
+                                       'base_level_KS(mean)','inter_exon_KS(mean)','intra_exon_KS(mean)',\
+                                       'base_level_TIN(mean)','inter_exon_TIN(mean)','intra_exon_TIN(mean)',\
+                                       'base_level_KS(sd)','inter_exon_KS(sd)','intra_exon_KS(sd)',\
+                                       'base_level_TIN(sd)','inter_exon_TIN(sd)','intra_exon_TIN(sd)'])   
     processed_transcript = 0
     tins = []
     kss = [] 
@@ -416,16 +416,16 @@ def summary_transcript():
                                                 np.mean(ks_array[expressing_samples,processed_transcript,0]),\
                                                 np.mean(ks_array[expressing_samples,processed_transcript,1]),\
                                                 np.mean(ks_array[expressing_samples,processed_transcript,2]),\
-                                                np.median(tin_array[expressing_samples,processed_transcript,0]),\
-                                                np.median(tin_array[expressing_samples,processed_transcript,1]),\
-                                                np.median(tin_array[expressing_samples,processed_transcript,2]),\
+                                                np.mean(tin_array[expressing_samples,processed_transcript,0]),\
+                                                np.mean(tin_array[expressing_samples,processed_transcript,1]),\
+                                                np.mean(tin_array[expressing_samples,processed_transcript,2]),\
                                                 np.std(ks_array[expressing_samples,processed_transcript,0]),\
                                                 np.std(ks_array[expressing_samples,processed_transcript,1]),\
                                                 np.std(ks_array[expressing_samples,processed_transcript,2]),\
                                                 np.std(tin_array[expressing_samples,processed_transcript,0]),\
                                                 np.std(tin_array[expressing_samples,processed_transcript,1]),\
                                                 np.std(tin_array[expressing_samples,processed_transcript,2]))])
-            tins.append([np.median(tin_array[expressing_samples,processed_transcript,i]) for i in range(3)])
+            tins.append([np.mean(tin_array[expressing_samples,processed_transcript,i]) for i in range(3)])
             kss.append([np.mean(ks_array[expressing_samples,processed_transcript,i]) for i in range(3)])
         processed_transcript += 1
         
@@ -433,23 +433,23 @@ def summary_transcript():
     kss = np.array(kss)
     tins = np.array(tins)
     
-    #Plot the mean KS and median TIN of transcripts.
+    #Plot the mean KS and mean TIN of transcripts.
     plt.figure(figsize=[20,16])
     plt.subplot(221)
     plt.scatter(kss[:,0], tins[:,0], s=3)
     plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
     plt.xlabel("5' bias <-- KS --> 3' bias")
-    plt.title('Mean base-level KS and median base-level TIN across samples')
+    plt.title('Mean base-level KS and mean base-level TIN across samples')
     plt.subplot(223)
     plt.scatter(kss[:,1], tins[:,1], s=3)
     plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
     plt.xlabel("5' bias <-- KS --> 3' bias")
-    plt.title('Mean exon-level KS and median exon-level TIN across samples')
+    plt.title('Mean inter-exon KS and mean inter-exon TIN across samples')
     plt.subplot(224)
     plt.scatter(kss[:,2], tins[:,2], s=3)
     plt.ylabel('nonuniform coverage <-- TIN --> uniform coverage')
     plt.xlabel("5' bias <-- KS --> 3' bias")
-    plt.title('Mean exon-average KS and median exon-average TIN across samples')
+    plt.title('Mean intra-exon KS and mean intra-exon TIN across samples')
     plt.savefig('summary_transcript.pdf')
     plt.clf()
 
@@ -460,8 +460,8 @@ def summary_exon():
     '''
     #Summary file of high expression transcripts.
     SUM_EXON = open('summary_exon.xls','w')
-    print >> SUM_EXON, '\t'.join(['exon','chrom','intra_exon_KS(mean)','intra_exon_TIN(median)',\
-                                  'intra_exon_KS(sd)','intra_exon_TIN(sd)'])
+    print >> SUM_EXON, '\t'.join(['exon','chrom','exon_KS(mean)','exon_TIN(mean)',\
+                                  'exon_KS(sd)','exon_TIN(sd)'])
     processed_exon = 0
     for line in open(options.ref_bed,'r'):
         if line.startswith(('#','track','browser')):continue  
@@ -476,7 +476,7 @@ def summary_exon():
             if np.sum(expressing_samples) >= options.minimum_sample:
                 print >> SUM_EXON, '\t'.join([name+'.'+str(i+1), chrom,\
                                               str(np.mean(exon_array[expressing_samples,processed_exon,0])),\
-                                              str(np.median(exon_array[expressing_samples,processed_exon,1])),\
+                                              str(np.mean(exon_array[expressing_samples,processed_exon,1])),\
                                               str(np.std(exon_array[expressing_samples,processed_exon,0])),\
                                               str(np.std(exon_array[expressing_samples,processed_exon,1]))])
             processed_exon += 1        
@@ -491,9 +491,9 @@ def output_rank():
         if i == 0:
             rank_file = 'base_level_TIN_rank.xls'
         elif i == 1:
-            rank_file = 'exon_level_TIN_rank.xls'
+            rank_file = 'inter_exon_TIN_rank.xls'
         else:
-            rank_file = 'exon_average_TIN_rank.xls'
+            rank_file = 'intra_exon_TIN_rank.xls'
         TIN_RANK = open(rank_file,'w')
         print >>TIN_RANK, '\t'.join(['gene'] + [j.split('/')[-1][:-4] for j in bamfiles])
         processed_transcript = 0
@@ -515,8 +515,8 @@ parser.add_option('-i','--input',action='store',type='string',dest='input_files'
 parser.add_option('-r','--refbed',action='store',type='string',dest='ref_bed',help='Reference gene model in BED format. Must be strandard 12-column BED file. [required]')
 parser.add_option('-d','--minDepth',action='store',type='float',dest='minimum_average_depth',default=0.5,help='Minimum average depth for each transcript to be processed. default=%default')
 parser.add_option('-s','--minSample',action='store',type='float',dest='minimum_sample',default=3,help='Minimum number of samples expressing a transcript/exon. Only transcript/exon expressed in greater than this number of samples will be summarized. default=%default')
-parser.add_option('-e','--exon',action='store_true',dest='exon',help='Output a xls file reporting intra-exon KS and TIN of each exon.')
-parser.add_option('-k','--rank',action='store_true',dest='rank',help='Output a xls file reporting the rank of median transcript TIN across samples.')
+parser.add_option('-e','--exon',action='store_true',dest='exon',help='Output xls files reporting KS and TIN of each exon.')
+parser.add_option('-k','--rank',action='store_true',dest='rank',help='Output xls files reporting the rank of transcript TIN across samples.')
 (options,args)=parser.parse_args()
 
 if not (options.input_files and options.ref_bed):
