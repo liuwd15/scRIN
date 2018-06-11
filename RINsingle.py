@@ -178,7 +178,7 @@ def calculate_ks_tin(exon_coverages, name, strand, EXON, processed_file, process
     intra_exon_tin = 0.0
     
     for exon_coverage in exon_coverages:
-        intra_exon_coverages.append(exon_coverage.mean())
+        intra_exon_coverages.append(np.full(exon_coverage.size,exon_coverage.mean(),dtype=float))
         #This step make sure that 3' bias results in positive KS and 5' bias results in negative KS.     
         exon_ks = ks_value(exon_coverage, strand)
         exon_kss.append(exon_ks)
@@ -192,8 +192,8 @@ def calculate_ks_tin(exon_coverages, name, strand, EXON, processed_file, process
     base_level_ks = ks_value(np.concatenate(exon_coverages), strand)   
     base_level_tin = tin_value(np.concatenate(exon_coverages))
     #KS and TIN calculated by averaging coverage on each exon.
-    inter_exon_ks = ks_value(np.array(intra_exon_coverages), strand)
-    inter_exon_tin = tin_value(np.array(intra_exon_coverages))  
+    inter_exon_ks = ks_value(np.concatenate(intra_exon_coverages), strand)
+    inter_exon_tin = tin_value(np.concatenate(intra_exon_coverages))  
     
     if options.exon:
         exon_number = len(exon_kss)
@@ -543,7 +543,8 @@ else:
 #Matrix of ks and tin of all transcripts in all samples.
 ks_array = np.zeros([bamfile_number, transcript_number, 3])
 tin_array = np.zeros([bamfile_number, transcript_number, 3])
-#Matrix of expression level of all transcripts in all samples.
+#Matrix of expression level of all transcripts in all samples. 
+#level=0: no expression. level=1: low expression. level=2: high expression. 
 expression_level = np.zeros([bamfile_number, transcript_number])
 if options.exon:
     #Matrix of ks and tin of all transcripts in all samples.

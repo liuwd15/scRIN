@@ -116,9 +116,9 @@ Following files will be created in the current directory.
 * `base_level_KS(mean)`: Mean of transcript KS.
 * `inter_exon_KS(mean)`: Mean of inter-exon KS.
 * `intra_exon_KS(mean)`: Mean of intra-exon KS.
-* `base_level_TIN(median)`: Median of transcript TIN.
-* `inter_exon_TIN(median)`: Median of inter-exon TIN.
-* `intra_exon_TIN(median)`: Median of intra-exon TIN.
+* `base_level_TIN(mean)`: mean of transcript TIN.
+* `inter_exon_TIN(mean)`: mean of inter-exon TIN.
+* `intra_exon_TIN(mean)`: mean of intra-exon TIN.
 * `base_level_KS(std)`: Standard deviation of transcript KS.
 * `inter_exon_KS(std)`: Standard deviation of inter-exon KS.
 * `intra_exon_KS(std)`: Standard deviation of intra-exon KS.
@@ -127,9 +127,9 @@ Following files will be created in the current directory.
 * `intra_exon_TIN(std)`: Standard deviation of intra-exon TIN.
 
 2. A **summary_sample.pdf** file containing 4 barplots.
-* `base_level_TIN(median)` with `base_level_TIN(std)` as error bar for each sample.
-* `inter_exon_TIN(median)` with `inter_exon_TIN(std)` as error bar for each sample.
-* `intra_exon_TIN(median)` with `intra_exon_TIN(std)` as error bar for each sample.
+* `base_level_TIN(mean)` with `base_level_TIN(std)` as error bar for each sample.
+* `inter_exon_TIN(mean)` with `inter_exon_TIN(std)` as error bar for each sample.
+* `intra_exon_TIN(mean)` with `intra_exon_TIN(std)` as error bar for each sample.
 * `expressed_transcript`.
 
 3. A **summary_transcript.xls** file containing the summary metrics of transcript expressed in all samples. Metrics are similar as those in 1 but are calculated across samples.
@@ -143,7 +143,7 @@ Following files will be created in the current directory.
 5. *[option -e enabled]* A **summary_exon.xls** file containing the summary metrics of exon expressed in all samples. Metrics include:
 
 * `exon_KS(mean)`: Mean of exon KS across samples.
-* `exon_TIN(mean)`: Median of exon TIN across samples.
+* `exon_TIN(mean)`: mean of exon TIN across samples.
 * `exon_KS(std)`: Standard deviation of exon KS across samples.
 * `exon_TIN(std)`: Standard deviation of exon TIN across samples.
 
