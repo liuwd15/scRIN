@@ -1,4 +1,4 @@
-﻿# RINsingle Documentation
+﻿# singleRIN Documentation
 
 ---
 
@@ -18,19 +18,19 @@ numpy
 
 ## Installation
 This program is a python script and works in unix-like operating systems.
-You can download it from [Github](https://raw.githubusercontent.com/liuwd15/RINsingle/master/RINsingle.py).
+You can download it from [Github](https://raw.githubusercontent.com/liuwd15/singleRIN/master/singleRIN.py).
 
-    wget https://raw.githubusercontent.com/liuwd15/RINsingle/master/RINsingle.py
+    wget https://raw.githubusercontent.com/liuwd15/singleRIN/master/singleRIN.py
 
 Then run it with python.
 
-    python RINsingle.py
+    python singleRIN.py
 
 Or you can make it executable and move it to your PATH.
 
-    chmod +x RINsingle.py  
-    mv RINsingle.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
-    RINsingle.py
+    chmod +x singleRIN.py  
+    mv singleRIN.py \~/bin #"\~/bin" can be replaced with other path in you PATH.  
+    singleRIN.py
 
 ## Usage
 ### Required input
@@ -40,16 +40,16 @@ Or you can make it executable and move it to your PATH.
         samtools sort -o example_sorted.bam example.bam  
         samtools index example_sorted.bam
 
-2. Reference [12-column](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) **.bed** file containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/RINsingle/tree/master/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
+2. Reference [12-column](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) **.bed** file containing a list of gene models. Representative .bed file containing RefSeq transcripts of hg19 and mm10 are available [here](https://github.com/liuwd15/singleRIN/tree/master/bed). Only the longest transcript for the gene with multiple transcripts is included to avoid redundancy.
 
 The simplest usage is:
 
-    RINsingle.py -r example_refseq.bed -i example_sorted.bam
+    singleRIN.py -r example_refseq.bed -i example_sorted.bam
 
 It is also recommended that many .bam files should be processed together.
 You can input comma-separated .bam files like this.
 
-    RINsingle.py -r example_refseq.bed -i example1_sorted.bam,example2_sorted.bam,example3_sorted.bam
+    singleRIN.py -r example_refseq.bed -i example1_sorted.bam,example2_sorted.bam,example3_sorted.bam
 
 You can also create a text file containing the path of all .bam files like this.
 
@@ -60,25 +60,25 @@ You can also create a text file containing the path of all .bam files like this.
 
 Then input the text file.
 
-    RINsingle.py -r example_refseq.bed -i samples.txt
+    singleRIN.py -r example_refseq.bed -i samples.txt
 
 ### Other options
 
 To perform additional analysis on inter-exon, use **-e** option. This will result in more output files (see Output).
 
-    RINsingle.py -r example_refseq.bed -i example_sorted.bam -e
+    singleRIN.py -r example_refseq.bed -i example_sorted.bam -e
 
 The transcripts with low expression are filted out. The default threshold is average coverage (read length * mapped read number / gene model length) > 0.5, you can change it with **-d** option.
 
-    RINsingle.py -r example_refseq.bed -i example_sorted.bam -d 1
+    singleRIN.py -r example_refseq.bed -i example_sorted.bam -d 1
     
 By default, only transcript/exon expressed in more than 3 samples will be summarized in **summary_transcript.xls** file (see Output), you can change this threshold with **-s** option. Noticing that only when the number of input files is more than this threshold will transcript/exon be summarized.
 
-    RINsingle.py -r example_refseq.bed -i example_sorted.bam -s 5
+    singleRIN.py -r example_refseq.bed -i example_sorted.bam -s 5
 
 If you want to get the rank of TIN of each trancript across samples, use **-k** option. This will create .xls files containing the rank of TIN of transcripts expresses in all samples.
 
-    RINsingle.py -r example_refseq.bed -i example_sorted.bam -k
+    singleRIN.py -r example_refseq.bed -i example_sorted.bam -k
 
 ## Output
 ### Sample directory
